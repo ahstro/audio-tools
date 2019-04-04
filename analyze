@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# Run with /path/to/analyze some-glob e.g:
+# ~/bin/analyze *.flac
+
+# Colors
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Loop over files match by glob
+for filename in "$@"
+do
+  # Create a spectrogram for each file matched by glob,
+  # replacing file extension by .png
+  echo -ne "Processing ${BLUE}$filename${NC}..."
+  sox "$filename" -n spectrogram -o "$(echo "$filename" | sed 's;\.[^.]*$;.png;')"
+  echo -e "${GREEN}DONE${NC}"
+done

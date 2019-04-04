@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Run with /path/to/transcode quality some-glob e.g:
+# ~/bin/transcode v0 *.flac
+
+# Colors
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+# Save first argument
+quality=$1
+
+# Remove first argument, so $@ is just the files
+shift
+
+# Set some variables based on quality
+case $quality in
+  "v0") outextension="mp3" && ffmpegoptions="-q:a 0";;
+  "v2") outextension="mp3" && ffmpegoptions="-q:a 2";;
+  "320") outextension="mp3" && ffmpegoptions="-b:a 320k";;
+   *) echo "Invalid quality: '$quality'" && exit 1;;
+esac
+
+# Loop over files match by glob
+for filename in "$@"
+do
+  # Transcode 
+  outfile=$(echo "$filename" | sed "s;\.[^.]*\$;.$outextension;")
+  echo -ne "Processing ${BLUE}$filename${NC}..."
+  ffmpeg -i "$filename" -loglevel error $ffmpegoptions "$outfile"
+  echo -e "${GREEN}DONE${NC}"
+done
